@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useRef } from "react";
 import "./LoginComponent.css";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function LoginComponent() {
   let emailRef = useRef("");
   let passwordRef = useRef("");
   let roleRef = useRef("");
+  const navTo = useNavigate();
 
   function loginHandle() {
     const data = {
@@ -17,7 +19,20 @@ export default function LoginComponent() {
     axios
       .post("http://localhost:8080/home/login", data)
       .then((response) => {
-        console.log(response);
+        localStorage.setItem(
+          "UserToken",
+          JSON.stringify(response.data.accessToken)
+        );
+        localStorage.setItem("UserData", JSON.stringify(response.data.person));
+      })
+      .then(() => {
+        if (roleRef.current.value == "ROLE_USER") {
+          navTo("/User");
+        } else if (roleRef.current.value == "ROLE_ADMIN") {
+          navTo("/Admin");
+        } else if (roleRef.current.value == "ROLE_AGENT") {
+          navTo("/Agent");
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -47,13 +62,9 @@ export default function LoginComponent() {
             placeholder="password"
             ref={passwordRef}
           />
-          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-            Forgot Password?
-          </a>
         </div>
 
         <div className="roleDiv">
-          <p>Role: </p>
           <select defaultValue="ROLE_USER" ref={roleRef}>
             <option value="ROLE_USER">User</option>
             <option value="ROLE_ADMIN">Admin</option>
@@ -62,7 +73,11 @@ export default function LoginComponent() {
         </div>
 
         <button className="logInButton" onClick={loginHandle}>
-          Log in
+          Log In
+        </button>
+
+        <button className="SignUpButton" onClick={() => navTo("/Registration")}>
+          Sign Up
         </button>
       </div>
     </>

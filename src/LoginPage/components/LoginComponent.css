@@ -20,7 +20,8 @@
 
 .LoginContainer h4 {
   position: relative;
-  top: 30px;
+  top: 40px;
+  right: 5px;
 }
 
 .LoginContainer p {
@@ -69,21 +70,22 @@
 .passwordDiv a {
   position: absolute;
   right: 60px;
-  bottom: 100px;
+  bottom: 130px;
 
   font-size: 12px;
 }
 
 .roleDiv {
   position: relative;
-  right: 90px;
-  bottom: 24px;
+  right: 78px;
+  bottom: 0px;
 }
 
 .logInButton {
+  width: 92px;
   position: relative;
-  top: -5px;
-  left: -85px;
+  top: 15px;
+  left: -5px;
 
   padding: 10px 20px;
 
@@ -107,5 +109,37 @@
 }
 
 .logInButton:focus {
+  outline: none;
+}
+
+.SignUpButton {
+  position: relative;
+  top: 15px;
+  left: -5px;
+
+  margin-left: 10px;
+
+  padding: 10px 20px;
+
+  border: none;
+  border-radius: 50px;
+
+  background-color: #425aab;
+
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+
+  cursor: pointer;
+
+  transition: 0.4s ease;
+}
+
+.SignUpButton:hover {
+  /* background-color: black; */
+  background-color: #31407d;
+}
+
+.SignUpButton:focus {
   outline: none;
 }
