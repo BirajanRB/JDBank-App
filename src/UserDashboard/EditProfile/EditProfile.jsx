@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import logo from "../SideBar/Logo.png";
-import "./editprofile.css";
 import SideBar from "../SideBar/SideBar";
+import "./editprofile.css";
 import axios from "axios";
 import placeholder from "./placeholder.jpg";
 
@@ -17,6 +17,8 @@ function EditProfile() {
 
   const [showSuccessPopup, setShowSuccessPopup] = useState(false); // State for success popup
 
+  const [userImageState, setUserImageState] = useState(placeholder);
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -26,10 +28,8 @@ function EditProfile() {
         ([key, value]) => value !== null && value !== ""
       )
     );
-
-    const apiUrl =
-      "http://localhost:8080/user/" +
-      JSON.parse(localStorage.getItem("UserData").user_id); // Replace with your API endpoint
+    const user = JSON.parse(localStorage.getItem("UserData"));
+    const apiUrl = "http://localhost:8080/user/" + user.user_id; // Replace with your API endpoint
 
     axios
       .put(apiUrl, filteredData)
@@ -50,12 +50,11 @@ function EditProfile() {
     if (file) {
       // Create a FormData object to send the image file to the server
       const formData = new FormData();
-      formData.append("avatar", file);
+      formData.append("image", file);
 
+      const user = JSON.parse(localStorage.getItem("UserData"));
       // Send the image to the server using Axios
-      const apiUrl =
-        "http://localhost:8080/user/upload/" +
-        JSON.parse(localStorage.getItem("UserData").user_id); // Replace with your API endpoint for image upload
+      const apiUrl = "http://localhost:8080/user/upload/" + user.user_id;
 
       axios
         .post(apiUrl, formData, {
@@ -67,7 +66,9 @@ function EditProfile() {
           console.log("Avatar image updated successfully:", response.data);
 
           // Set the uploadedImage state with the new avatar image URL
-          setUploadedImage(response.data.avatarImageUrl);
+          setUploadedImage(
+            "http://localhost:8080/user/download/" + user.user_id
+          );
         })
         .catch((error) => {
           console.error("Error uploading avatar image:", error);
@@ -75,6 +76,18 @@ function EditProfile() {
         });
     }
   };
+
+  function setUploadedImage(url) {
+    axios.get(url, { responseType: "arraybuffer" }).then((response) => {
+      const imageBase64 = btoa(
+        new Uint8Array(response.data).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ""
+        )
+      );
+      setUserImageState(`data:image/jpeg;base64,${imageBase64}`);
+    });
+  }
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
@@ -154,7 +167,7 @@ function EditProfile() {
             </div>
           </form>
           <div className="image_change">
-            <img src={placeholder} alt="" />
+            <img src={userImageState} alt="" />
             <h2>Upload New Profile Avatar</h2>
             <input
               type="file"
